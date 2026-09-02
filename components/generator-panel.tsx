@@ -41,7 +41,7 @@ async function readResponse(response: Response) {
 
 export function GeneratorPanel() {
   const [prompt, setPrompt] = useState('');
-  const [selectedVersions, setSelectedVersions] = useState<Version[]>(['base', 'v6']);
+  const [selectedVersions, setSelectedVersions] = useState<Version[]>(['base', 'v3', 'v6']);
   const [job, setJob] = useState<GenerationJob | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
