@@ -23,7 +23,7 @@
   min-height: 104px;
   padding: 20px;
   resize: vertical;
-  border: 1px solid var(--paper);
+  border: 1px solid var(--ink);
   border-radius: 0;
   outline: none;
   background: var(--paper);
