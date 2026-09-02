@@ -41,6 +41,7 @@ async function readResponse(response: Response) {
 
 export function GeneratorPanel() {
   const [prompt, setPrompt] = useState('');
+  const [selectedVersions, setSelectedVersions] = useState<Version[]>(['base', 'v6']);
   const [job, setJob] = useState<GenerationJob | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -48,6 +49,16 @@ export function GeneratorPanel() {
   const active = submitting || job?.status === 'queued' || job?.status === 'running';
   const jobId = job?.id;
   const jobStatus = job?.status;
+
+  function toggleVersion(version: Version) {
+    if (active) return;
+    setSelectedVersions((current) => {
+      if (current.includes(version)) {
+        return current.length === 1 ? current : current.filter((item) => item !== version);
+      }
+      return versions.map(({ id }) => id).filter((item) => item === version || current.includes(item));
+    });
+  }
 
   useEffect(() => {
     if (!jobId || jobStatus === 'complete' || jobStatus === 'failed') return;
@@ -91,7 +102,7 @@ export function GeneratorPanel() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: cleaned, seed: 42, versions: versions.map(({ id }) => id) }),
+        body: JSON.stringify({ prompt: cleaned, seed: 42, versions: selectedVersions }),
       });
       setJob(await readResponse(response));
     } catch (submitError) {
@@ -118,11 +129,15 @@ export function GeneratorPanel() {
           />
           <button type="submit" disabled={active || prompt.trim().length < 3}>
             {active ? <LoaderCircle className="generator-spinner" size={18} /> : <Sparkles size={18} />}
-            {submitting ? 'Starting' : active ? `${job?.completed ?? 0} / 8 generated` : 'Generate 8 images'}
+            {submitting ? 'Starting' : active ? `${job?.completed ?? 0} / ${job?.total ?? selectedVersions.length} generated` : `Generate ${selectedVersions.length} ${selectedVersions.length === 1 ? 'image' : 'images'}`}
           </button>
         </div>
+        <div className="generator-models" aria-label="Models to generate">
+          <span>Models</span>
+          {versions.map(({ id, label }) => <button type="button" key={id} aria-pressed={selectedVersions.includes(id)} disabled={active} onClick={() => toggleVersion(id)}>{label}</button>)}
+        </div>
         <div className="generator-meta">
-          <span>8 MATCHED OUTPUTS</span><span>SEED 42</span><span>1024 × 1024</span><span>8 STEPS</span><span>GUIDANCE 0</span>
+          <span>{selectedVersions.length} MATCHED {selectedVersions.length === 1 ? 'OUTPUT' : 'OUTPUTS'}</span><span>SEED 42</span><span>1024 × 1024</span><span>8 STEPS</span><span>GUIDANCE 0</span>
         </div>
       </form>
 
@@ -135,7 +150,7 @@ export function GeneratorPanel() {
           </div>
           <div className="generator-progress"><i style={{ width: `${(job.completed / job.total) * 100}%` }} /></div>
           <div className="generator-grid">
-            {versions.map(({ id, label }) => {
+            {versions.filter(({ id }) => job.versions.includes(id)).map(({ id, label }) => {
               const source = job.outputs[id];
               const isCurrent = job.currentVersion === id;
               return (
