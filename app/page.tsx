@@ -74,7 +74,7 @@ export default function Home() {
   const [activePrompt,setActivePrompt]=useState(0);
   const [activeStrategy,setActiveStrategy]=useState(6);
   const [visibleModels,setVisibleModels]=useState(models.map(m=>m.folder));
-  const [mode,setMode]=useState<'rows'|'grid'>('rows');
+  const [mode,setMode]=useState<'rows'|'grid'>('grid');
   const selected=useMemo(()=>models.filter(m=>visibleModels.includes(m.folder)),[visibleModels]);
   const strategy=strategies[activeStrategy];
   const activePromptData=prompts[activePrompt];
