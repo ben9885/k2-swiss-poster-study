@@ -94,6 +94,7 @@ export function GeneratorPanel() {
     event.preventDefault();
     const cleaned = prompt.trim();
     if (cleaned.length < 3 || active) return;
+    const fullPrompt = `a swiss poster ${cleaned}`;
 
     setSubmitting(true);
     setError('');
@@ -102,7 +103,7 @@ export function GeneratorPanel() {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: cleaned, seed: 42, versions: selectedVersions }),
+        body: JSON.stringify({ prompt: fullPrompt, seed: 42, versions: selectedVersions }),
       });
       setJob(await readResponse(response));
     } catch (submitError) {
@@ -117,16 +118,20 @@ export function GeneratorPanel() {
       <form className="generator-form" onSubmit={submit}>
         <label htmlFor="generation-prompt">Generate across Base + V0–V6</label>
         <div className="generator-input-row">
-          <textarea
-            id="generation-prompt"
-            value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
-            placeholder="Describe the brand, product, audience, and desired visual tension…"
-            rows={2}
-            minLength={3}
-            maxLength={600}
-            disabled={active}
-          />
+          <div className="generator-prompt-field">
+            <span id="generation-prompt-prefix">a swiss poster</span>
+            <textarea
+              id="generation-prompt"
+              aria-describedby="generation-prompt-prefix"
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+              placeholder="for a brand, product, audience, and desired visual tension…"
+              rows={2}
+              minLength={3}
+              maxLength={580}
+              disabled={active}
+            />
+          </div>
           <button type="submit" disabled={active || prompt.trim().length < 3}>
             {active ? <LoaderCircle className="generator-spinner" size={18} /> : <Sparkles size={18} />}
             {submitting ? 'Starting' : active ? `${job?.completed ?? 0} / ${job?.total ?? selectedVersions.length} generated` : `Generate ${selectedVersions.length} ${selectedVersions.length === 1 ? 'image' : 'images'}`}
