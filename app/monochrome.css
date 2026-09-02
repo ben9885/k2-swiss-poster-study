@@ -70,7 +70,7 @@ h2,
 .strategy-tabs {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   border-top: 1px solid #666;
   border-left: 1px solid #666;
 }
@@ -122,7 +122,7 @@ h2,
 
 @media (max-width: 900px) {
   .strategy-tabs {
-    grid-template-columns: repeat(5, minmax(120px, 1fr));
+    grid-template-columns: repeat(7, minmax(120px, 1fr));
     overflow-x: auto;
   }
 
