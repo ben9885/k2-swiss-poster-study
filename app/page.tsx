@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Check, ChevronDown, Download, Grid3X3, Info, Rows3 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { GeneratorPanel } from '@/components/generator-panel';
 
 const prompts = [
   { label: 'Japanese tea', fileIndex: 2 },
@@ -79,8 +80,8 @@ export default function Home() {
   const activePromptData=prompts[activePrompt];
   const toggle=(folder:string)=>setVisibleModels(current=>current.includes(folder)?(current.length===1?current:current.filter(x=>x!==folder)):[...current,folder]);
   return <main>
-    <header className="masthead"><a className="brand" href="#top"><span>K2</span><b>Swiss Poster Study</b></a><nav><a href="#compare">Compare</a><a href="#training">Training set</a><a href="#method">Method</a></nav><a className="download" href="/captions.csv" download><Download size={15}/> Captions</a></header>
-    <section className="intro" id="top"><p className="eyebrow">MODEL EVALUATION / 2026</p><h1><span>Fine Tuning</span><span>Krea K2 for Swiss Poster</span><span>Design Styles</span></h1><div className="intro-copy"><p>A controlled visual study of how successive LoRA training strategies move Krea 2 toward a Swiss poster language.</p><div className="counter"><strong>160</strong><span>outputs</span></div><div className="counter"><strong>79</strong><span>strict V6 images</span></div></div></section>
+    <header className="masthead"><a className="brand" href="#top"><span>K2</span><b>Swiss Poster Study</b></a><nav><a href="#generate">Generate</a><a href="#compare">Compare</a><a href="#method">Method</a></nav><a className="download" href="/captions.csv" download><Download size={15}/> Captions</a></header>
+    <section className="intro" id="top"><p className="eyebrow">MODEL EVALUATION / 2026</p><h1><span>Fine Tuning</span><span>Krea K2 for Swiss Poster</span><span>Design Styles</span></h1><GeneratorPanel/><div className="intro-copy"><p>A controlled visual study of how successive LoRA training strategies move Krea 2 toward a Swiss poster language.</p><div className="counter"><strong>160</strong><span>outputs</span></div><div className="counter"><strong>79</strong><span>strict V6 images</span></div></div></section>
     <section className="workspace" id="compare">
       <div className="controls"><div className="prompt-tabs" role="tablist" aria-label="Prompt">{prompts.map((prompt,i)=><button key={prompt.label} className={activePrompt===i?'active':''} onClick={()=>setActivePrompt(i)}><small>0{i+1}</small>{prompt.label}</button>)}</div><div className="view-toggle"><button className={mode==='rows'?'active':''} onClick={()=>setMode('rows')} aria-label="Rows"><Rows3 size={17}/></button><button className={mode==='grid'?'active':''} onClick={()=>setMode('grid')} aria-label="Grid"><Grid3X3 size={17}/></button></div></div>
       <div className="model-filter"><span>SHOW MODELS</span>{models.map(model=><button key={model.folder} className={visibleModels.includes(model.folder)?'selected':''} onClick={()=>toggle(model.folder)}><i>{visibleModels.includes(model.folder)&&<Check size={11}/>}</i>{model.label}<small>{model.note}</small></button>)}</div>

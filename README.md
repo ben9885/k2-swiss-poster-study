@@ -11,6 +11,7 @@ An interactive, matched-seed comparison of the Krea 2 Turbo base model and seven
 - Individual captions for the V3 training set
 - Interactive controls for switching prompts, hiding model versions, and changing the comparison layout
 - A documented experiment history from V0 through V6
+- A prompt lab that generates one matched-seed image from Base and every LoRA version
 
 ## Results at a glance
 
@@ -44,9 +45,25 @@ Create a production build with:
 pnpm build
 ```
 
+## Live prompt lab
+
+The prompt field in the hero submits an asynchronous job for Base and V0–V6. Every version uses seed 42, 1024 × 1024 output, eight inference steps, and guidance 0 so that model behavior stays directly comparable. Results appear progressively and can be downloaded individually.
+
+The browser calls server-only Next.js route handlers. Those routes authenticate to the H100 inference service, so the GPU credential is never exposed in client code. Configure the site with:
+
+```bash
+GENERATOR_API_URL=https://your-secure-inference-host
+GENERATOR_API_KEY=your-shared-secret
+```
+
+The FastAPI service is in `inference/k2_generator_api.py`. It loads Krea 2 Turbo once, registers the seven LoRA adapters by name, processes a bounded queue, rate-limits clients, and expires generated files after 24 hours. The GPU host must remain online for live generation.
+
 ## Repository structure
 
 - `app/` - comparison interface and visual system
+- `app/api/generate/` - authenticated, server-only inference proxy
+- `components/generator-panel.tsx` - prompt, progress, and matched output interface
+- `inference/` - H100 generation service and Python requirements
 - `public/models/` - optimized web copies of Base and V0-V6 outputs
 - `public/training-v4/` - optimized web copies of the 428 reviewed V4 training images
 - `public/captions.csv` - V3 image captions

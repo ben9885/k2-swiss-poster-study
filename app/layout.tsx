@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Ubuntu_Mono } from 'next/font/google';
 import './globals.css';
 import './monochrome.css';
+import './generator.css';
 
 const ubuntuMono = Ubuntu_Mono({
   subsets: ['latin'],
